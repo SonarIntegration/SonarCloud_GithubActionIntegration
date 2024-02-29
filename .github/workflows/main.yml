@@ -6,7 +6,7 @@ on:
 
 jobs:
   slack_notifier:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Set up JDK 17
@@ -15,11 +15,17 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
           
-      - name: Set PowerShell Execution Policy
-        run: |
-           Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+      # - name: Set PowerShell Execution Policy
+      #   run: |
+      #      Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
       - name: Check out repository
         uses: actions/checkout@v2
+        
+      - name: Install JFrog CLI
+        run: |
+          curl -fL https://getcli.jfrog.io | sh
+          sudo mv jfrog /usr/local/bin/  # Assuming jfrog is in the current directory
+          
 
       - name: Build Maven project
         run: |
@@ -39,8 +45,17 @@ jobs:
       - name: Convert to non-shallow clone
         run: git fetch --unshallow
         
-      - name: SonarQube Scan
-        run: mvn sonar:sonar 
+      - name: Set JFrog CLI Path
+        run: |
+          export PATH=$PATH:/usr/local/bin
+
+      - name: Push Artifacts to JFrog
+        run: |
+                  jfrog rt u target/*.jar artifacts_pocs-libs-snapshot-local/ --url=https://aritfacts.jfrog.io/artifactory/artifacts_pocs-libs-snapshot-local/ --access-token=eyJ2ZXIiOiIyIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJraWQiOiJCSUFNOWl3MlhWcDRBTzZwelRJTGFEYmZ3cUJjMlJhR01sb3ZtWEJ2Y0VjIn0.eyJzdWIiOiJqZmFjQDAxaHFyaHdwNzN5N3R3MHJwMXY4cWcwNHRhL3VzZXJzL3NodWJoYW1jaGF2QGN5YmFnZS5jb20iLCJzY3AiOiJhcHBsaWVkLXBlcm1pc3Npb25zL2FkbWluIiwiYXVkIjoiKkAqIiwiaXNzIjoiamZmZUAwMWhxcmh3cDczeTd0dzBycDF2OHFnMDR0YSIsImlhdCI6MTcwOTE5OTA0OSwianRpIjoiNWY0OWRkNmQtMDE3My00OTBlLTg5NzItZTA0NzI1NWU0MTE5In0.Gp200tynQQDSOnZxGtMqn4ubIytJihFTaNRLxwcDyOaCDbwYSJpTmj7ZtDtIOE5zd1jUwPBdVeuuthSrxcjaOMcfttrlTeZ8lfHrY4paDyrDn96svVkZd_4f88pa2zObwF5GqOrv6JwS5Jb5e3oUjIUkuEwVfRaxMXYx3hmgisvJ-zvQcm3zYOz2_1doTzn6ngvbQQG7wKPwcTK8G4Y6Z4Vl8fzMW_xOPNalGhMG3CuwUeViW017nAnePe8FgF67ul4FS3SDLCD3cjmZzSjTEPowSg_MKnqBg-ztwRV9xWYk_bXYiG4_P_zN688PVe7i5083P_h_b9S6E20Dk0OD6w
+
+        
+      # - name: SonarQube Scan
+      #   run: mvn sonar:sonar 
            
           
 
