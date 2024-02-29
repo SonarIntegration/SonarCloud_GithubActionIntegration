@@ -6,7 +6,7 @@ on:
 
 jobs:
   slack_notifier:
-    runs-on: SelfHosted
+    runs-on: self-hosted
 
     steps:
       - name: Set up JDK 17
