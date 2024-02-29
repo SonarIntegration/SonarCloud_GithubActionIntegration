@@ -45,7 +45,37 @@ jobs:
 
       - name: Push Artifacts to JFrog
         run: |
-          jfrog rt u target/*.jar artifacts_pocs-libs-snapshot-local/ --url=https://aritfacts.jfrog.io/artifactory/artifacts_pocs-libs-snapshot-local/ --access-token=YOUR_JFROG_ACCESS_TOKEN
+          jfrog rt u target/*.jar gitjfrog-libs-snapshot-local/ --url=https://shubhamchavartifacts.jfrog.io/artifactory/gitjfrog-libs-snapshot-local/ --access-token=eyJ2ZXIiOiIyIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJraWQiOiJCSUFNOWl3MlhWcDRBTzZwelRJTGFEYmZ3cUJjMlJhR01sb3ZtWEJ2Y0VjIn0.eyJzdWIiOiJqZmFjQDAxaHFyaHdwNzN5N3R3MHJwMXY4cWcwNHRhL3VzZXJzL3NodWJoYW1jaGF2QGN5YmFnZS5jb20iLCJzY3AiOiJhcHBsaWVkLXBlcm1pc3Npb25zL2FkbWluIiwiYXVkIjoiKkAqIiwiaXNzIjoiamZmZUAwMWhxcmh3cDczeTd0dzBycDF2OHFnMDR0YSIsImlhdCI6MTcwOTE5OTA0OSwianRpIjoiNWY0OWRkNmQtMDE3My00OTBlLTg5NzItZTA0NzI1NWU0MTE5In0.Gp200tynQQDSOnZxGtMqn4ubIytJihFTaNRLxwcDyOaCDbwYSJpTmj7ZtDtIOE5zd1jUwPBdVeuuthSrxcjaOMcfttrlTeZ8lfHrY4paDyrDn96svVkZd_4f88pa2zObwF5GqOrv6JwS5Jb5e3oUjIUkuEwVfRaxMXYx3hmgisvJ-zvQcm3zYOz2_1doTzn6ngvbQQG7wKPwcTK8G4Y6Z4Vl8fzMW_xOPNalGhMG3CuwUeViW017nAnePe8FgF67ul4FS3SDLCD3cjmZzSjTEPowSg_MKnqBg-ztwRV9xWYk_bXYiG4_P_zN688PVe7i5083P_h_b9S6E20Dk0OD6w
+        
+      # - name: SonarQube Scan
+      #   run: mvn sonar:sonar 
+           
+          
+
+      - name: Send notification on Slack using Webhooks - Success
+        if: ${{ success() }}
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "Maven project built successfully."
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send notification on Slack using Webhooks - Failure
+        if: ${{ failure() }}
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "Maven build failed. Please check the build logs for details."
+            }
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
 
       # Uncomment the following block if you want to include SonarQube scan
       # - name: SonarQube Scan
