@@ -26,8 +26,7 @@ jobs:
       - name: Build Maven project
         run: |
           mvn clean install
-          # $env:MAVEN_EXIT_CODE=$LASTEXITCODE
-
+          
       - name: Generate code coverage report
         run: |
           mvn jacoco:report
@@ -38,8 +37,8 @@ jobs:
           name: code-coverage
           path: target/site/jacoco/index.html
 
-      - name: Convert to non-shallow clone
-        run: git fetch --unshallow
+      # - name: Convert to non-shallow clone
+      #   run: git fetch --unshallow
 
       - name: Set JFrog CLI Path
         run: export PATH=$PATH:/usr/local/bin
@@ -52,24 +51,24 @@ jobs:
       # - name: SonarQube Scan
       #   run: mvn sonar:sonar -Dsonar.organization=YOUR_SONAR_ORG_KEY -Dsonar.projectKey=YOUR_PROJECT_KEY -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=YOUR_SONAR_TOKEN
 
-      - name: Send notification on Slack using Webhooks - Success
-        if: ${{ success() }}
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": "Maven project built successfully."
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # - name: Send notification on Slack using Webhooks - Success
+      #   if: ${{ success() }}
+      #   uses: slackapi/slack-github-action@v1.24.0
+      #   with:
+      #     payload: |
+      #       {
+      #         "text": "Maven project built successfully."
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Send notification on Slack using Webhooks - Failure
-        if: ${{ failure() }}
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": "Maven build failed. Please check the build logs for details."
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # - name: Send notification on Slack using Webhooks - Failure
+      #   if: ${{ failure() }}
+      #   uses: slackapi/slack-github-action@v1.24.0
+      #   with:
+      #     payload: |
+      #       {
+      #         "text": "Maven build failed. Please check the build logs for details."
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
